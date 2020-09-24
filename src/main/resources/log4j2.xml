@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" status="WARN" monitorInterval="5"
+    xsi:noNamespaceSchemaLocation="http://raw.githubusercontent.com/apache/logging-log4j2/master/log4j-core/src/main/resources/Log4j-config.xsd">
+
+    <Properties>
+        <property name="applicationName">${bundle:application:applicationName}</property>
+    </Properties>
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>[%-5level] %d [%t] [%X] %c: %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <RollingFile name="RollingFileAppender" fileName="logs/${applicationName}.log"
+            filePattern="logs/$${date:yyyy-MM}/${applicationName}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>[%-5level] %d [%t] [%X] %c: %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <TimeBasedTriggeringPolicy  />
+                <SizeBasedTriggeringPolicy size="30 MB" />
+            </Policies>
+            <DefaultRolloverStrategy />
+        </RollingFile>
+
+        <Async name="AsyncFileAppender" bufferSize="20">
+            <AppenderRef ref="RollingFileAppender" />
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Root level="TRACE">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="AsyncFileAppender" />
+        </Root>
+    </Loggers>
+</Configuration>
