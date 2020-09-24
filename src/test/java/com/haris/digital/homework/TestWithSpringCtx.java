@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.haris.digital.homework.config.TestConfig;
+import com.haris.digital.homework.repository.MachineRepository;
 import com.haris.digital.homework.services.MachineCRUDService;
 
 
@@ -13,8 +14,14 @@ import com.haris.digital.homework.services.MachineCRUDService;
 @ContextConfiguration(classes = {TestConfig.class})
 public class TestWithSpringCtx {
 
+	protected String ID5 = "50112233-4455-6677-8899-aabbccddeeff";
+	protected String DELETED_ID = "30112233-4455-6677-8899-aabbccddeeff";
+
+
 	@Autowired
 	protected MachineCRUDService machineCRUDService;
+	@Autowired
+	protected MachineRepository machineRepository;
 
 
 }
