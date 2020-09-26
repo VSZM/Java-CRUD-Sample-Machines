@@ -3,7 +3,8 @@ package com.haris.digital.homework.services;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.MissingResourceException;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import com.haris.digital.homework.TestWithSpringCtx;
 import com.haris.digital.homework.dto.MachineDTO;
+import com.haris.digital.homework.entities.Machine;
+import com.haris.digital.homework.exceptions.MissingMachineException;
 
 
 public class TestMachineCRUDService extends TestWithSpringCtx {
@@ -22,6 +25,16 @@ public class TestMachineCRUDService extends TestWithSpringCtx {
 
 		assertTrue(CollectionUtils.isNotEmpty(allNonDeleted));
 		assertEquals(4, allNonDeleted.size());
+
+		var updatedAtList = allNonDeleted.stream()
+			.map(dto -> machineRepository.findById(dto.getId()).get())
+			.map(Machine::getUpdatedAt)
+			.collect(Collectors.toList());
+		var sortedUpdatedAtList = updatedAtList.stream()
+											.sorted(Collections.reverseOrder())
+											.collect(Collectors.toList());
+
+		assertEquals(sortedUpdatedAtList, updatedAtList);
 	}
 	
 	@Test
@@ -33,10 +46,13 @@ public class TestMachineCRUDService extends TestWithSpringCtx {
 	
 	@Test
 	public void testGetByIdFailsAsExpected(){
-		assertThrows(MissingResourceException.class, () -> {
+		assertThrows(MissingMachineException.class, () -> {
 			machineCRUDService.getByID("Non Existent ID");
 		});
-		assertThrows(MissingResourceException.class, () -> {
+		assertThrows(MissingMachineException.class, () -> {
+			machineCRUDService.getByID(null);
+		});
+		assertThrows(MissingMachineException.class, () -> {
 			machineCRUDService.getByID(DELETED_ID);
 		});
 	}
@@ -47,10 +63,12 @@ public class TestMachineCRUDService extends TestWithSpringCtx {
 
 		var newMachine = new MachineDTO();
 		newMachine.setName("New Machine");
+		newMachine.setId("nonid");
 		newMachine = machineCRUDService.createMachine(newMachine);
 		assertNotNull(newMachine);
 		assertTrue(StringUtils.isNotBlank(newMachine.getId()));
 		assertEquals("New Machine", newMachine.getName());
+		assertNotEquals("nonid", newMachine.getId());
 		assertNotNull( newMachine.getCreatedAt());
 
 		var machineEntity = machineRepository.findById(newMachine.getId());
@@ -73,8 +91,9 @@ public class TestMachineCRUDService extends TestWithSpringCtx {
 	}
 
 	@Test
-	public void testUpdateMachineWorksNormally(){
+	public void testUpdateMachineWorksNormally() throws InterruptedException {
 		var now = LocalDateTime.now();
+		Thread.sleep(100);
 
 		var machine = machineCRUDService.getByID(ID5);
 		assertNotNull(machine);
@@ -82,6 +101,8 @@ public class TestMachineCRUDService extends TestWithSpringCtx {
 		machine = machineCRUDService.updateMachine(machine);
 		assertEquals("New Name", machine.getName());
 
+		entityManager.flush();
+		entityManager.clear();
 		var machineEntity = machineRepository.findById(ID5);
 		assertTrue(machineEntity.isPresent());
 		assertEquals("New Name", machineEntity.get().getName());
@@ -103,13 +124,13 @@ public class TestMachineCRUDService extends TestWithSpringCtx {
 			machine.setName(null);
 			machineCRUDService.updateMachine(machine);
 		});
-		assertThrows(MissingResourceException.class, () -> {
+		assertThrows(MissingMachineException.class, () -> {
 			var machine = new MachineDTO();
 			machine.setName("New Name");
 			machine.setId("Not an ID");
 			machineCRUDService.updateMachine(machine);
 		});
-		assertThrows(MissingResourceException.class, () -> {
+		assertThrows(MissingMachineException.class, () -> {
 			var machine = machineCRUDService.getByID(DELETED_ID);
 			assertNotNull(machine);
 			machine.setName("New Name");

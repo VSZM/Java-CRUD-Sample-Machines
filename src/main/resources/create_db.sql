@@ -8,5 +8,6 @@ CREATE TABLE machine(
     isDeleted boolean not null default false,
     createdAt timestamp with time zone not null,
     updatedAt timestamp with time zone not null
-
 );
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE public.machine TO harisuser;

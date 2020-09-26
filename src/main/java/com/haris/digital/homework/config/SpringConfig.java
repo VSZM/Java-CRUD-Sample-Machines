@@ -1,5 +1,9 @@
 package com.haris.digital.homework.config;
 
+import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -17,4 +21,8 @@ public class SpringConfig {
 		SpringApplication.run(SpringConfig.class, args);
 	}
 
+	@PostConstruct
+	public void init(){
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
 }

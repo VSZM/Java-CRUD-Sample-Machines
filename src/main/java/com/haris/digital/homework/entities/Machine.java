@@ -2,14 +2,13 @@ package com.haris.digital.homework.entities;
 
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.GenericGenerator;
+
+import com.haris.digital.homework.dto.MachineDTO;
 
 import lombok.*;
 
@@ -33,12 +32,31 @@ public class Machine implements Serializable {
 	private String id;
 	@Column(name = "name", nullable = false)
 	private String name;
-	private Boolean isDeleted;
+	private Boolean isDeleted = false;
 
-	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
-	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+
+
+	@PrePersist
+	protected void onCreate() {
+		createdAt = LocalDateTime.now();
+		updatedAt = LocalDateTime.now();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		updatedAt = LocalDateTime.now();
+	}
+
+	public static Machine fromDTO(MachineDTO dto){
+		Machine m = new Machine();
+		m.setName(dto.getName());
+
+		return m;
+	}
+
 
 
 }

@@ -1,12 +1,9 @@
 package com.haris.digital.homework.services;
 
-import java.util.*;
-
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 import com.haris.digital.homework.dto.MachineDTO;
-
-import lombok.RequiredArgsConstructor;
+import com.haris.digital.homework.exceptions.MissingMachineException;
 
 /**
  * Provides CRUD functionality to Machine entity
@@ -14,17 +11,17 @@ import lombok.RequiredArgsConstructor;
 public interface MachineCRUDService {
 
 	/**
-	 * Fetch all non-deleted Machines
+	 * Fetch all non-deleted Machines ordered by last modified first
 	 */
 	List<MachineDTO> fetchAll();
 
 	/**
 	 * Finds a single Machine.
-	 * @param uuid The id of the Machine
+	 * @param id The id of the Machine
 	 * @return The Machine found
-	 * @throws MissingResourceException If the Machine is not in the database or deleted.
+	 * @throws MissingMachineException If the Machine is not in the database or deleted.
 	 */
-	MachineDTO getByID(String uuid) throws MissingResourceException;
+	MachineDTO getByID(String id) throws MissingMachineException;
 
 	/**
 	 * Creates a new machine.
@@ -39,15 +36,15 @@ public interface MachineCRUDService {
 	 * @param updateableMachine
 	 * @return The updated machine.
 	 * @throws IllegalArgumentException If the name attribute is blank.
-	 * @throws MissingResourceException If the Machine is not in the database or deleted.
+	 * @throws MissingMachineException If the Machine is not in the database or deleted.
 	 */
-	MachineDTO updateMachine(MachineDTO updateableMachine) throws IllegalArgumentException, MissingResourceException;
+	MachineDTO updateMachine(MachineDTO updateableMachine) throws IllegalArgumentException, MissingMachineException;
 
 	/**
 	 * Deletes the Machine.
-	 * @param uuid The id of the Machine
-	 * @throws MissingResourceException If the Machine is not in the database or deleted.
+	 * @param id The id of the Machine
+	 * @throws MissingMachineException If the Machine is not in the database or deleted.
 	 */
-	void deleteMachine(String uuid) throws MissingResourceException;
+	void deleteMachine(String id) throws MissingMachineException;
 
 }

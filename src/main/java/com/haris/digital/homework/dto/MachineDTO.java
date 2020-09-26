@@ -3,6 +3,8 @@ package com.haris.digital.homework.dto;
 
 import java.time.LocalDateTime;
 
+import com.haris.digital.homework.entities.Machine;
+
 import lombok.*;
 
 /**
@@ -16,4 +18,12 @@ public class MachineDTO {
 	private String id;
 	private String name;
 	private LocalDateTime createdAt;
+
+	public static MachineDTO fromEntity(Machine entity){
+		MachineDTO m = new MachineDTO();
+		m.setId(entity.getId());
+		m.setName(entity.getName());
+		m.setCreatedAt(entity.getCreatedAt());
+		return m;
+	}
 }
